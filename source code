@@ -1,0 +1,121 @@
+#include <Servo.h>
+Servo servo;
+const int PIRpin=7;
+const int buzzerPin=6;
+const int ledPin=5;
+const int blue=10;
+const int green=11;
+const int red=8;
+const int temperaturePin = A0;
+const int gas_pin = A1;
+const int LEFT = 4, RIGHT=3, UP=2,DOWN=1;
+
+
+void setup() 
+{
+  
+  
+  
+  servo.attach(9);
+  servo.write(0);
+  pinMode(PIRpin, INPUT);
+  pinMode (temperaturePin , INPUT);
+  pinMode (gas_pin, INPUT);
+  pinMode(LEFT, INPUT);
+  pinMode(RIGHT, INPUT);
+  pinMode(UP, INPUT);
+  pinMode(DOWN, INPUT);
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  pinMode(blue, OUTPUT);
+  pinMode(green, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop()
+{ float degreesC;
+  degreesC=analogRead(0);
+  degreesC=degreesC*0.0048828125;
+  degreesC=(degreesC-0.5)*100;
+
+  int sensorValue;
+  sensorValue = analogRead(gas_pin);
+ 
+  int right,left,up,down;
+  right = digitalRead(RIGHT);
+  left = digitalRead(LEFT);
+  up = digitalRead(UP);
+  down = digitalRead(DOWN);
+  
+ if((right == LOW && left == LOW)||(up == LOW && down == LOW)&& sensorValue > 720 && degreesC>37)
+  {
+    digitalWrite(red,HIGH);
+    delay(500);
+    digitalWrite(red,LOW);
+    delay(500);
+    digitalWrite(red,HIGH);
+    delay(500);
+    digitalWrite(red,LOW);
+    delay(500);
+    Serial.println("Accident Detected");
+    Serial.println("Sending Alert");
+    delay(1000);
+  }
+  else if( sensorValue > 720 && degreesC>37)
+  { 
+    
+    tone(buzzerPin, 1000, 500);
+    delay(1000);
+    
+    digitalWrite(blue,HIGH);
+    delay(500);
+    digitalWrite(blue,LOW);
+    delay(500);
+    digitalWrite(blue,HIGH);
+    delay(500);
+    digitalWrite(blue,LOW);
+    delay(500);
+    Serial.println("Gas is detected And Teperature Is Increased:");
+    delay(10000);
+  }
+ else if(degreesC>37) {
+    tone(buzzerPin, 1000, 200);
+    delay(1000);
+    digitalWrite(green,HIGH);
+    delay(500);
+    digitalWrite(green,LOW);
+    
+    digitalWrite(green,HIGH);
+    delay(500);
+    digitalWrite(green,LOW);
+    delay(500);
+    Serial.println("Teperature Is Increased:");
+    delay(10000);
+ }
+  else
+  { 
+    noTone(buzzerPin);
+  }
+    
+   
+  if(digitalRead(PIRpin)==1)
+  { 
+    tone(buzzerPin, 1000, 2000);
+    delay(1000); 
+    digitalWrite(ledPin,HIGH);
+    delay(500);
+    digitalWrite(ledPin,LOW);
+    delay(500);
+    digitalWrite(ledPin,HIGH);
+    delay(500);
+    digitalWrite(ledPin,LOW);
+    delay(500);
+   
+    servo.write(90);
+    delay(5000);
+    servo.write(0);   
+  }
+ 
+  
+ 
+}
